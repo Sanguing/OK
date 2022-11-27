@@ -1,0 +1,99 @@
+def read_from_file(file_name):
+    data = []
+    with open(file_name) as f:
+        while True:
+            line = list(map(int, f.readline().split()))
+            data.append(line)
+            if not line:
+                break
+    f.close()
+    return data
+
+
+def write_to_file(file_name, results):
+    f = open(file_name, 'w')
+    for a in results:
+        a = str(a)
+        f.write(a + '\n')
+    f.close()
+
+
+def find_shortest(data, starting_id, route):
+
+    index = starting_id
+    length = 9e+40
+    for i in range(len(data)):
+        if i == starting_id or data[i][2] == 1:
+            pass
+        else:
+            dist = pow(pow(data[starting_id][0] - data[i][0], 2) + pow(data[starting_id][1] - data[i][1], 2), 1/2)
+            if dist < length:
+                index = i
+                length = dist
+
+    data[starting_id][2] = 1
+    route.append(starting_id + 1)
+    return index
+
+
+def get_length(data, starting_id):
+
+    length = 9e+40
+    for i in range(len(data)):
+        if i == starting_id or data[i][2] == 1:
+            pass
+        else:
+            dist = pow(pow(data[starting_id][0] - data[i][0], 2) + pow(data[starting_id][1] - data[i][1], 2), 1/2)
+            if dist < length:
+                length = dist
+    if length != 9e+40:
+        return length
+    else:
+        return 0
+
+
+def main():
+
+    # defining vars
+
+    indice = 0
+    route = []                      #path
+    distance = 0
+    s_input = "data.txt"
+    s_output = "results.txt"
+    base = read_from_file(s_input)
+
+    # tweaking vars
+
+    del base[-1]                    # some empty list element generating for some reason
+    base_2 = base                   # just for some safety I will be storing my base, since will be dynamically changing the first one
+    n = base[0][0]
+    del base[0]
+    for i in range(len(base)):      # remembering indexes that have been travelled to
+        base[i].append(0)
+
+                       # path
+
+    for i in range(n):
+        print(get_length(base, indice), end=' ')
+        distance += get_length(base, indice)
+        print(indice + 1, end=' ')
+        indice = find_shortest(base, indice, route)
+        print(indice + 1, end=' ')
+        print(distance)
+        #print(distance)
+
+    route.append(1)
+    #print(base[0][0], base[0][1], base[indice][0], base[indice][1])
+    distance += pow(pow(base[indice][0] - base[0][0], 2) + pow(base[indice][1] - base[0][1], 2), 1/2)
+    #print(pow(pow(base[indice][0] - base[0][0], 2) + pow(base[indice][1] - base[0][1], 2), 1/2))
+
+    write_to_file(s_output, route)
+    #print(route)
+    #print(distance)
+
+
+main()
+
+
+
